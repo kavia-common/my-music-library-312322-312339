@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { uploadSong } from "../api/songs";
-import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
 
 function isMp3(file) {
@@ -11,8 +10,7 @@ function isMp3(file) {
 
 // PUBLIC_INTERFACE
 export function UploadForm({ onUploaded }) {
-  /** Upload panel for mp3 file upload. */
-  const { token } = useAuth();
+  /** Upload panel for mp3 file upload (public/anonymous). */
   const { pushToast } = useToast();
 
   const [file, setFile] = useState(null);
@@ -27,7 +25,7 @@ export function UploadForm({ onUploaded }) {
     return "";
   }, [file]);
 
-  const canSubmit = Boolean(token) && !fileError && !submitting;
+  const canSubmit = !fileError && !submitting;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +34,7 @@ export function UploadForm({ onUploaded }) {
 
     setSubmitting(true);
     try {
-      await uploadSong({ token, file, title: title.trim(), artist: artist.trim() });
+      await uploadSong({ file, title: title.trim(), artist: artist.trim() });
       pushToast({ type: "success", title: "Uploaded", message: "Your song was uploaded successfully." });
       setFile(null);
       setTitle("");

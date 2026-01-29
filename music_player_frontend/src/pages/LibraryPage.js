@@ -4,7 +4,6 @@ import { UploadForm } from "../components/UploadForm";
 import { SongList } from "../components/SongList";
 import { PlayerBar } from "../components/PlayerBar";
 import { listSongs, getSongStreamUrl } from "../api/songs";
-import { useAuth } from "../contexts/AuthContext";
 import { usePlayer } from "../contexts/PlayerContext";
 import { useToast } from "../contexts/ToastContext";
 
@@ -21,8 +20,7 @@ function normalizeListResponse(data) {
 
 // PUBLIC_INTERFACE
 export function LibraryPage() {
-  /** Authenticated page showing upload + library + player. */
-  const { token } = useAuth();
+  /** Public page showing upload + library + player (anonymous). */
   const { loadAndPlay } = usePlayer();
   const { pushToast } = useToast();
 
@@ -34,7 +32,7 @@ export function LibraryPage() {
     setSongsError("");
     setLoadingSongs(true);
     try {
-      const data = await listSongs({ token });
+      const data = await listSongs();
       setSongs(normalizeListResponse(data));
     } catch (err) {
       const msg = err?.message || "Failed to load songs.";
@@ -47,7 +45,7 @@ export function LibraryPage() {
     } finally {
       setLoadingSongs(false);
     }
-  }, [token, pushToast]);
+  }, [pushToast]);
 
   useEffect(() => {
     refreshSongs();

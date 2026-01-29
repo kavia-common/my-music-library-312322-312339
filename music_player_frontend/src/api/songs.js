@@ -1,14 +1,14 @@
 import { apiRequest, getStreamUrl } from "./client";
 
 // PUBLIC_INTERFACE
-export async function listSongs({ token }) {
-  /** Fetches user's songs. Expects backend endpoint GET /songs. */
-  return await apiRequest("/songs", { method: "GET", token });
+export async function listSongs() {
+  /** Fetches all songs. Expects backend endpoint GET /songs (public). */
+  return await apiRequest("/songs", { method: "GET" });
 }
 
 // PUBLIC_INTERFACE
-export async function uploadSong({ token, file, title, artist }) {
-  /** Uploads an mp3 file. Expects backend endpoint POST /songs/upload multipart/form-data. */
+export async function uploadSong({ file, title, artist }) {
+  /** Uploads an mp3 file. Expects backend endpoint POST /songs/upload multipart/form-data (public). */
   const form = new FormData();
   form.append("file", file);
   if (title) form.append("title", title);
@@ -16,7 +16,6 @@ export async function uploadSong({ token, file, title, artist }) {
 
   return await apiRequest("/songs/upload", {
     method: "POST",
-    token,
     body: form,
   });
 }

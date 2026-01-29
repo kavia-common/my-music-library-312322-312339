@@ -30,7 +30,7 @@ function buildErrorMessage({ response, json }) {
 }
 
 // PUBLIC_INTERFACE
-export async function apiRequest(path, { method = "GET", token, headers, body } = {}) {
+export async function apiRequest(path, { method = "GET", headers, body } = {}) {
   /** Performs an HTTP request to the backend API and throws an Error on non-2xx responses. */
   const baseUrl = getApiBaseUrl();
   const url = `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
@@ -45,9 +45,7 @@ export async function apiRequest(path, { method = "GET", token, headers, body } 
     finalHeaders["Content-Type"] = "application/json";
   }
 
-  if (token) {
-    finalHeaders["Authorization"] = `Bearer ${token}`;
-  }
+  // Auth removed: do not send Authorization headers.
 
   const response = await fetch(url, {
     method,
