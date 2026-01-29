@@ -47,11 +47,22 @@ export async function apiRequest(path, { method = "GET", headers, body } = {}) {
 
   // Auth removed: do not send Authorization headers.
 
-  const response = await fetch(url, {
-    method,
-    headers: finalHeaders,
-    body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method,
+      headers: finalHeaders,
+      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
+    });
+  } catch (e) {
+    // Typical browser error text is "Failed to fetch" which hides the real cause.
+    // Provide actionable diagnostics (URL + env var hint).
+    const envBase = process.env.REACT_APP_API_BASE_URL;
+    const hint = envBase
+      ? `REACT_APP_API_BASE_URL=${envBase}`
+      : "REACT_APP_API_BASE_URL is not set (falling back to http://localhost:3001)";
+    throw new Error(`Network error calling backend (${url}). ${hint}. Original error: ${e?.message || String(e)}`);
+  }
 
   if (!response.ok) {
     const json = await safeReadJson(response);
